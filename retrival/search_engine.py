@@ -1,5 +1,8 @@
 import os
 import jieba
+import numba as nb
+from numba.typed import List as TypedList
+from typing import List
 
 
 class SearchEngine(object):
@@ -13,11 +16,12 @@ class SearchEngine(object):
     stop_words: list, 停用词表
 
     """
+
     def __init__(self, index_name, stop_words):
         self.index_name = index_name
         self.stop_words = stop_words
 
-    def query_preprocessing(self, query):
+    def query_preprocessing(self, query: str) -> List[str]:
         """
         query文本的预处理
 
@@ -33,6 +37,15 @@ class SearchEngine(object):
         terms = [word for word in jieba.lcut_for_search(query) if word not in self.stop_words]
 
         return terms
+
+    def get_doc_ids(self, query_terms: List[str]) -> nb.types.List:
+        """
+
+        Parameters:
+        ----------
+        query_terms: list
+        """
+        pass
 
     def search(self, query):
         """
@@ -51,5 +64,6 @@ class SearchEngine(object):
         if len(query_terms) == 0:
             return {}
 
-        return 1
+        doc_ids = self.get_doc_ids(query_terms)
 
+        return 1
