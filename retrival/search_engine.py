@@ -12,3 +12,12 @@ class SearchEngine(object):
     def __init__(self, index_name):
         self.index_name = index_name
 
+    def search(self, query):
+        """
+
+        Parameters:
+        ----------
+        query: str, 字符串
+        """
+        return 1
+
