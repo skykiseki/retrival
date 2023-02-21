@@ -4,24 +4,18 @@ from setuptools import setup
 LONGDOC = """
 我家还蛮大的, 欢迎你们来我家van.
 
-https://github.com/skykiseki
+https://github.com/skykiseki/retrival
 
-score_card_model
+retrival
 ====
 
-    "风险评分卡模型开发" 
-    基于最早的FICO风险评分卡逻辑进行优化
-
-    当前包含主干部分, 即特征分箱、IV值计算、Woe转化、模型评估指标等。
-    不包含建模的部分, 这个问题留给用户。
-
+    关于bm25召回的包都是集成的,而且很慢, 所以自己写了个包用, 
     
-    特征的分箱使用的方法是卡方分箱, 整个流程为:
-    整理特征类型(离散、连续) -> 初始化分箱 -> 卡方合并 -> 单调性检验 -> 特殊值处理 
+    基于Numba加速
 
 完整文档见 ``README.md``
 
-GitHub: https://github.com/skykiseki/score_card_model
+GitHub: https://github.com/skykiseki/retrival
 """
 
 setup(name='retrival',

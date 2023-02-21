@@ -12,7 +12,7 @@
       <paths name="root@43.139.86.244:22222 password">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/tmp/pycharm_project_753" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
