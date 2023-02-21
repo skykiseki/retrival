@@ -51,6 +51,7 @@ setup(name='retrival',
       install_requires=[
         'scikit-learn>=1.0',
         'jieba',
+        'indxr',
         'numba>=0.54.1',
       ],
       keywords='retrival',
