@@ -53,7 +53,7 @@ class SearchEngine(object):
         self.id_mapping = None
         self.doc_index = None
 
-    def query_preprocessing(self, query: str) -> List[str]:
+    def query_preprocessing(self, query: str, method='search') -> List[str]:
         """
         query文本的预处理
 
@@ -66,7 +66,12 @@ class SearchEngine(object):
         terms: list[str], 返回切分后的词汇列表
 
         """
-        terms = [word for word in jieba.lcut_for_search(query) if word not in self.stop_words]
+        assert method in ['search', 'default']
+
+        if method == 'search':
+            terms = [word for word in jieba.lcut_for_search(query) if word not in self.stop_words]
+        else:
+            terms = [word for word in jieba.lcut(query) if word not in self.stop_words]
 
         return terms
 
@@ -82,7 +87,7 @@ class SearchEngine(object):
         self
 
         """
-        vectorizer = CountVectorizer(dtype=np.int16)
+        vectorizer = CountVectorizer(dtype=np.int16, token_pattern=r"(?u)\b\w+\b")
 
         # [n_docs x n_terms]
         df_matrix = vectorizer.fit_transform(raw_documents=collections)
@@ -122,8 +127,8 @@ class SearchEngine(object):
         创建索引序列, 注意这里jsonl必须要有text字段和id字段
 
         e.g.:
-        [{'text_cut': '1 2 3', 'id': '0'},
-        {'text_cut': 'a s d', 'id': '99'}]
+        [{'text': '1 2 3', 'id': '0'},
+        {'text': 'a s d', 'id': '99'}]
 
         Parameters:
         ----------
@@ -135,7 +140,7 @@ class SearchEngine(object):
 
         """
         # 创建text的generator
-        collections = self.read_jsonl(path_jsonl=path_jsonl, col='text_cut')
+        collections = self.read_jsonl(path_jsonl=path_jsonl, col='text')
 
         # 创建id的id_mapping
         ids = self.read_jsonl(path_jsonl=path_jsonl, col='id')
