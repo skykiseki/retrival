@@ -9,9 +9,7 @@ https://github.com/skykiseki/retrival
 retrival
 ====
 
-    关于bm25召回的包都是集成的,而且很慢, 所以自己写了个包用, 
-    
-    基于Numba加速
+关于bm25召回的包都是集成的, 太重了而且很慢, 所以自己写了个包用, 基于Numba加速会快很多
 
 完整文档见 ``README.md``
 
