@@ -1,2 +1,2 @@
 # retrival
-pypi package
+just for bm25
