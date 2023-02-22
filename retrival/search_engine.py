@@ -153,7 +153,7 @@ class SearchEngine(object):
         self.corpus = corpus
 
         # 先基于语料生成jsonl文件
-        self.init_corpus_to_jsonl(corpus=self.corpus)
+        self.init_corpus_to_jsonl()
 
         # 创建text的generator
         collections = self.read_jsonl(path_jsonl=self.path_jsonl, col='text')
@@ -216,13 +216,12 @@ class SearchEngine(object):
                 l = json.loads(l)
                 yield l[col]
 
-    def init_corpus_to_jsonl(self, corpus):
+    def init_corpus_to_jsonl(self):
         """
         读取语料重新生成jsonl文件
 
         Parameters:
         ----------
-        corpus: list[dict], 语料
 
         Returns:
         -------
