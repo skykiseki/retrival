@@ -2,6 +2,8 @@ import jieba
 import numba as nb
 import json
 import numpy as np
+import jsonlines
+import os
 from indxr import Indxr
 from numba.typed import List as TypedList
 from collections import defaultdict
@@ -20,6 +22,8 @@ class SearchEngine(object):
 
     stop_words: list, 停用词表
 
+    path_jsonl: str, 建立索引生成的jsonl文件
+
     inverted_index: dict, docs相关tf统计
 
     doc_lens: int, 总长度
@@ -34,15 +38,17 @@ class SearchEngine(object):
 
     id_mapping: dict, 原始语料的id
 
-    self.doc_index: 原始doc, 最终用于取得召回的行数据
+    doc_index: Indxr object, 原始doc索引
 
+    corpus: list[dict], 原始语料
     """
 
-    def __init__(self, index_name, stop_words=None):
+    def __init__(self, index_name, path_jsonl='retrival.jsonl', stop_words=None):
         if stop_words is None:
             stop_words = []
         self.index_name = index_name
         self.stop_words = stop_words
+        self.path_jsonl = path_jsonl
 
         self.inverted_index = None
         self.doc_lens = None
@@ -52,6 +58,8 @@ class SearchEngine(object):
         self.doc_count = None
         self.id_mapping = None
         self.doc_index = None
+
+        self.corpus = None
 
     def query_preprocessing(self, query: str, method='search') -> List[str]:
         """
@@ -124,32 +132,38 @@ class SearchEngine(object):
         # 计算词袋集合
         self.vocabulary = set(self.inverted_index)
 
-    def index(self, path_jsonl):
+    def index(self, corpus):
         """
         创建索引序列, 注意这里jsonl必须要有text字段和id字段
 
-        e.g.:
+        corpus e.g.:
         [{'text': '1 2 3', 'id': '0'},
         {'text': 'a s d', 'id': '99'}]
 
         Parameters:
         ----------
-        path_jsonl: str, jsonline文件路径
+        corpus: list[dict], 原始语料
 
         Returns:
         -------
         self
 
         """
+        # 判断是否写入语料
+        self.corpus = corpus
+
+        # 先基于语料生成jsonl文件
+        self.init_corpus_to_jsonl(corpus=self.corpus)
+
         # 创建text的generator
-        collections = self.read_jsonl(path_jsonl=path_jsonl, col='text')
+        collections = self.read_jsonl(path_jsonl=self.path_jsonl, col='text')
 
         # 创建id的id_mapping
-        ids = self.read_jsonl(path_jsonl=path_jsonl, col='id')
+        ids = self.read_jsonl(path_jsonl=self.path_jsonl, col='id')
         self.id_mapping = dict(enumerate(ids))
 
         # 取得原始语料
-        self.doc_index = Indxr(path_jsonl)
+        self.doc_index = Indxr(self.path_jsonl)
 
         # 对collections进行建立索引、计算长度、相对长度等
         self.build_inverted_index(collections=collections)
@@ -201,6 +215,34 @@ class SearchEngine(object):
             for l in fr:
                 l = json.loads(l)
                 yield l[col]
+
+    def init_corpus_to_jsonl(self, corpus):
+        """
+        读取语料重新生成jsonl文件
+
+        Parameters:
+        ----------
+        corpus: list[dict], 语料
+
+        Returns:
+        -------
+
+        """
+        # 先删除原始文件
+        if os.path.isfile(self.path_jsonl):
+            os.remove(self.path_jsonl)
+
+        # 再开始生成jsonl文件
+        if self.corpus is None:
+            raise NotImplementedError('No corpus data found')
+
+        else:
+            corpus_writer = jsonlines.open(self.path_jsonl, mode='a')
+            for d in self.corpus:
+                corpus_writer(d)
+
+            corpus_writer.close()
+
 
     def get_docs(self, doc_ids: List[str]) -> List[dict]:
         """

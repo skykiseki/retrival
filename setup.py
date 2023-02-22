@@ -17,7 +17,7 @@ GitHub: https://github.com/skykiseki/retrival
 """
 
 setup(name='retrival',
-      version='1.0.0',
+      version='1.0.1',
       description='Just for BM25',
       long_description=LONGDOC,
       long_description_content_type="text/markdown",
@@ -42,6 +42,7 @@ setup(name='retrival',
           'scikit-learn>=1.0',
           'jieba',
           'indxr',
+          'jsonlines',
           'numba>=0.54.1',
       ],
       keywords='retrival',
