@@ -277,6 +277,11 @@ class SearchEngine(object):
 
 
         """
+        # 先检查是否存在索引文件, 无则重新生成
+        if not os.path.exists(self.path_jsonl):
+            self.init_corpus_to_jsonl()
+
+        # 切词
         query_terms = self.query_preprocessing(query)
 
         # 注意只取在词袋中的词汇
