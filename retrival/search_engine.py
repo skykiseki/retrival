@@ -61,6 +61,8 @@ class SearchEngine(object):
         ----------
         query: str, 字符串
 
+        method: str, default/search模式
+
         Returns:
         -------
         terms: list[str], 返回切分后的词汇列表
