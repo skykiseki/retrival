@@ -238,7 +238,7 @@ class SearchEngine(object):
         else:
             corpus_writer = jsonlines.open(self.path_jsonl, mode='a')
             for d in self.corpus:
-                corpus_writer(d)
+                corpus_writer.write(d)
 
             corpus_writer.close()
 
