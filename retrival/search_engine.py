@@ -4,6 +4,7 @@ import json
 import numpy as np
 import jsonlines
 import os
+import fcntl
 from indxr import Indxr
 from numba.typed import List as TypedList
 from collections import defaultdict
@@ -228,7 +229,7 @@ class SearchEngine(object):
 
         """
         # 先删除原始文件
-        if os.path.isfile(self.path_jsonl):
+        if os.path.exists(self.path_jsonl):
             os.remove(self.path_jsonl)
 
         # 再开始生成jsonl文件
@@ -236,12 +237,16 @@ class SearchEngine(object):
             raise NotImplementedError('No corpus data found')
 
         else:
-            corpus_writer = jsonlines.open(self.path_jsonl, mode='a')
-            for d in self.corpus:
-                corpus_writer.write(d)
+            with jsonlines.open(self.path_jsonl, mode='a') as writer:
+                # 加文件锁
+                fcntl.flock(writer._fp.fileno(), fcntl.LOCK_EX)
 
-            corpus_writer.close()
-
+                try:
+                    for d in self.corpus:
+                        writer.write(d)
+                finally:
+                    # 解锁文件
+                    fcntl.flock(writer._fp.fileno(), fcntl.LOCK_UN)
 
     def get_docs(self, doc_ids: List[str]) -> List[dict]:
         """
