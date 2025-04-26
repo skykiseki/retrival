@@ -62,7 +62,7 @@ class SearchEngine(object):
 
         self.corpus = None
 
-    def query_preprocessing(self, query: str, method='search') -> List[str]:
+    def query_preprocessing(self, query: str) -> List[str]:
         """
         query文本的预处理
 
@@ -77,12 +77,11 @@ class SearchEngine(object):
         terms: list[str], 返回切分后的词汇列表
 
         """
-        assert method in ['search', 'default']
 
-        if method == 'search':
-            terms = [word for word in jieba.lcut_for_search(query) if word not in self.stop_words]
-        else:
-            terms = [word for word in jieba.lcut(query) if word not in self.stop_words]
+        if None == query or 0 == len(query):
+            return []
+
+        terms = [word for word in jieba.lcut_for_search(query) if word not in self.stop_words]
 
         return terms
 
@@ -98,7 +97,7 @@ class SearchEngine(object):
         self
 
         """
-        vectorizer = CountVectorizer(dtype=np.int16, token_pattern=r"(?u)\b\w+\b")
+        vectorizer = CountVectorizer(dtype=np.int16, tokenizer=self.query_preprocessing)
 
         # [n_docs x n_terms]
         df_matrix = vectorizer.fit_transform(raw_documents=collections)
@@ -132,6 +131,7 @@ class SearchEngine(object):
 
         # 计算词袋集合
         self.vocabulary = set(self.inverted_index)
+        return inverted_index
 
     def index(self, corpus):
         """
