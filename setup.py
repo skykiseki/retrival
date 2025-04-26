@@ -17,7 +17,7 @@ GitHub: https://github.com/skykiseki/retrival
 """
 
 setup(name='retrival',
-      version='1.0.2',
+      version='1.0.3',
       description='Just for BM25',
       long_description=LONGDOC,
       long_description_content_type="text/markdown",
